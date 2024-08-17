@@ -20,9 +20,10 @@ jobs:
         with:
           python-version: '3.12'
 
-      - run: pip install maturin
-      - run: maturin dev
-      - run: pdoc --no-show-source 'ignore' '!ignore.ignore'
+      - run: python3 -m venv .venv
+      - run: source .venv/bin/activate && pip install maturin pdoc
+      - run: source .venv/bin/activate && maturin dev
+      - run: source .venv/bin/activate && pdoc -o docs/ --no-show-source 'ignore' '!ignore.ignore'
 
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -4,6 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "ignore-python"
+description = "Rust ignore crate Python bindings"
 requires-python = ">=3.8"
 classifiers = [
     "Programming Language :: Rust",
