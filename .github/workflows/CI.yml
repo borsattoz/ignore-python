@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   build-test:
-    runs-on: ${{ matrix.conf.os }}
+    runs-on: self-hosted
     name: ${{ matrix.conf.os }}-${{ matrix.conf.target }}-${{ matrix.python-version }}-${{ matrix.conf.python-architecture }}-${{ matrix.conf.manylinux }}
     strategy:
       fail-fast: ${{ !( startsWith(github.ref, 'refs/heads/master') || startsWith(github.ref, 'refs/tags/') ) }}
@@ -123,7 +123,7 @@ jobs:
 
   build-sdist:
     name: Build sdists
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -144,7 +144,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
     strategy:
       fail-fast: false
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [build-test, build-sdist]
     environment:
       name: pypi
@@ -169,7 +169,7 @@ jobs:
     permissions:
       contents: write
     needs: [build-test, build-sdist]
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
     - uses: actions/download-artifact@v3
       with:
