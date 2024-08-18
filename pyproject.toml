@@ -5,13 +5,20 @@ build-backend = "maturin"
 [project]
 name = "ignore-python"
 description = "Rust ignore crate Python bindings"
+readme = "README.md"
+license = {file = "LICENSE.txt"}
 requires-python = ">=3.8"
+keywords = ["python", "gitignore", "search", "rust", "extension", "module", "filesystem", "recursively-search", "fd", "ripgrep", "ignore"]
 classifiers = [
     "Programming Language :: Rust",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dynamic = ["version"]
+
+[project.urls]
+documentation = "https://borsattoz.github.io/ignore-python"
+repository = "https://github.com/borsattoz/ignore-python"
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
