@@ -1,7 +1,10 @@
 use pyo3::{prelude::*, types::PyAny};
 
-fn register_child_module<'a>(parent_module: &'a Bound<'a, PyModule>, name: &'a str) -> PyResult<Bound<'a, PyModule>> {
-    let child_module = PyModule::new_bound(parent_module.py(), name)?;
+fn register_child_module<'a>(
+    parent_module: &'a Bound<'a, PyModule>,
+    name: &'a str,
+) -> PyResult<Bound<'a, PyModule>> {
+    let child_module = PyModule::new(parent_module.py(), name)?;
 
     parent_module.add_submodule(&child_module)?;
 
@@ -12,10 +15,11 @@ fn register_child_module<'a>(parent_module: &'a Bound<'a, PyModule>, name: &'a s
         parent_module_name = &parent_module_name[..dot_index];
     }
 
-    parent_module.py().import_bound("sys")?.getattr("modules")?.set_item(
-        String::from(parent_module_name) + "." + name,
-        &child_module
-    )?;
+    parent_module
+        .py()
+        .import("sys")?
+        .getattr("modules")?
+        .set_item(String::from(parent_module_name) + "." + name, &child_module)?;
 
     Ok(child_module)
 }
@@ -24,38 +28,48 @@ struct PathBuf(std::path::PathBuf);
 
 impl FromPyObject<'_> for PathBuf {
     fn extract_bound(path: &Bound<'_, PyAny>) -> PyResult<Self> {
-        let builtins = PyModule::import_bound(path.py(), "builtins")?;
+        let builtins = PyModule::import(path.py(), "builtins")?;
 
-        let path = builtins
-            .getattr("str")?
-            .call((path,), None)?;
+        let path = builtins.getattr("str")?.call((path,), None)?;
         let path: &str = path.extract()?;
 
         Ok(PathBuf(std::path::PathBuf::from(path)))
     }
 }
 
-impl IntoPy<PyObject> for PathBuf {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        let pathlib = PyModule::import_bound(py, "pathlib").expect("no `pathlib`");
-        let path = pathlib
-            .getattr("Path").expect("no `pathlib.Path`")
-            .call1((self.0,)).expect("wrong call to `Path`");
+impl<'py> IntoPyObject<'py> for PathBuf {
+    type Target = PyAny;
+    type Output = Bound<'py, Self::Target>;
+    type Error = PyErr;
 
-        path.unbind()
+    fn into_pyobject(self, py: Python<'py>) -> Result<Self::Output, Self::Error> {
+        let pathlib = PyModule::import(py, "pathlib").expect("no `pathlib`");
+        let path = pathlib
+            .getattr("Path")
+            .expect("no `pathlib.Path`")
+            .call1((self.0,))
+            .expect("wrong call to `Path`");
+
+        Ok(path)
     }
 }
 
 struct Path<'a>(&'a std::path::Path);
 
-impl IntoPy<PyObject> for Path<'_> {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        let pathlib = PyModule::import_bound(py, "pathlib").expect("no `pathlib`");
-        let path = pathlib
-            .getattr("Path").expect("no `pathlib.Path`")
-            .call1((self.0,)).expect("wrong call to `Path`");
+impl<'py> IntoPyObject<'py> for Path<'_> {
+    type Target = PyAny;
+    type Output = Bound<'py, Self::Target>;
+    type Error = PyErr;
 
-        path.unbind()
+    fn into_pyobject(self, py: Python<'py>) -> Result<Self::Output, Self::Error> {
+        let pathlib = PyModule::import(py, "pathlib").expect("no `pathlib`");
+        let path = pathlib
+            .getattr("Path")
+            .expect("no `pathlib.Path`")
+            .call1((self.0,))
+            .expect("wrong call to `Path`");
+
+        Ok(path)
     }
 }
 
@@ -83,7 +97,11 @@ mod ignore {
     impl IOError {
         #[new]
         fn new(errno: u32, strerror: String, filename: String) -> Self {
-            Self { errno, strerror, filename }
+            Self {
+                errno,
+                strerror,
+                filename,
+            }
         }
 
         fn __str__(&self) -> String {
@@ -94,28 +112,38 @@ mod ignore {
     impl From<Error> for PyErr {
         fn from(error: Error) -> Self {
             match &error.0 {
-                ignore_rust::Error::WithPath { path, err } => {
-                    match err.as_ref() {
-                        ignore_rust::Error::Io(io_error) => {
-                            match io_error.kind() {
-                                io::ErrorKind::NotFound => {
-                                    Python::with_gil(|py| {
-                                        let errno = py.import_bound("errno").expect("`errno` module")
-                                            .getattr("ENOENT").expect("`errno.ENOENT` constant")
-                                            .extract().expect("`int` value");
-                                        let strerror = error.0.to_string();
-                                        let filename = path.clone().into_os_string().into_string().expect("a path");
+                ignore_rust::Error::WithPath { path, err } => match err.as_ref() {
+                    ignore_rust::Error::Io(io_error) => match io_error.kind() {
+                        io::ErrorKind::NotFound => Python::with_gil(|py| {
+                            let errno = py
+                                .import("errno")
+                                .expect("`errno` module")
+                                .getattr("ENOENT")
+                                .expect("`errno.ENOENT` constant")
+                                .extract()
+                                .expect("`int` value");
+                            let strerror = error.0.to_string();
+                            let filename =
+                                path.clone().into_os_string().into_string().expect("a path");
 
-                                        PyErr::from_value_bound(Bound::new(py, IOError { errno, strerror, filename }).unwrap().into_any())
-                                    })
-                                },
-                                _ => PyErr::new::<Error, _>(error.0.to_string())
-                            }
-                        }
-                        _ => PyErr::new::<Error, _>(error.0.to_string())
-                    }
+                            PyErr::from_value(
+                                Bound::new(
+                                    py,
+                                    IOError {
+                                        errno,
+                                        strerror,
+                                        filename,
+                                    },
+                                )
+                                .unwrap()
+                                .into_any(),
+                            )
+                        }),
+                        _ => PyErr::new::<Error, _>(error.0.to_string()),
+                    },
+                    _ => PyErr::new::<Error, _>(error.0.to_string()),
                 },
-                _ => PyErr::new::<Error, _>(error.0.to_string())
+                _ => PyErr::new::<Error, _>(error.0.to_string()),
             }
         }
     }
@@ -200,7 +228,10 @@ mod ignore {
             slf
         }
 
-        fn overrides<'a>(mut slf: PyRefMut<'a, Self>, overrides: overrides::Override) -> PyRefMut<'a, Self> {
+        fn overrides<'a>(
+            mut slf: PyRefMut<'a, Self>,
+            overrides: overrides::Override,
+        ) -> PyRefMut<'a, Self> {
             slf.0.overrides(overrides.0);
 
             slf
@@ -225,7 +256,10 @@ mod ignore {
             slf
         }
 
-        fn add_custom_ignore_filename<'a>(mut slf: PyRefMut<'a, Self>, file_name: &str) -> PyRefMut<'a, Self> {
+        fn add_custom_ignore_filename<'a>(
+            mut slf: PyRefMut<'a, Self>,
+            file_name: &str,
+        ) -> PyRefMut<'a, Self> {
             slf.0.add_custom_ignore_filename(file_name);
 
             slf
@@ -265,10 +299,9 @@ mod ignore {
         }
 
         fn __next__(mut slf: PyRefMut<'_, Self>) -> Option<Result<DirEntry, Error>> {
-            slf.0.next()
-                .map(|res| res
-                    .map(|dent| DirEntry(dent))
-                    .map_err(|e| Error(e)))
+            slf.0
+                .next()
+                .map(|res| res.map(|dent| DirEntry(dent)).map_err(|e| Error(e)))
         }
     }
 
@@ -286,28 +319,26 @@ mod ignore {
         impl OverrideBuilder {
             #[new]
             fn new(py: Python<'_>, path: &Bound<'_, PyAny>) -> Result<Self, PyErr> {
-                let builtins = PyModule::import_bound(py, "builtins")?;
+                let builtins = PyModule::import(py, "builtins")?;
 
-                let path = builtins
-                    .getattr("str")?
-                    .call1((path,))?;
-                let path: &str = path
-                    .extract()?;
+                let path = builtins.getattr("str")?.call1((path,))?;
+                let path: &str = path.extract()?;
                 let path = std::path::Path::new(path);
 
                 Ok(Self(ignore_rust::overrides::OverrideBuilder::new(path)))
             }
 
             fn build(&self) -> Result<Override, Error> {
-                self.0.build()
-                    .map(|o| Override(o))
-                    .map_err(|e| Error(e))
+                self.0.build().map(|o| Override(o)).map_err(|e| Error(e))
             }
 
-            fn add<'a>(mut slf: PyRefMut<'a, Self>, glob: &'a str) -> Result<PyRefMut<'a, Self>, Error> {
+            fn add<'a>(
+                mut slf: PyRefMut<'a, Self>,
+                glob: &'a str,
+            ) -> Result<PyRefMut<'a, Self>, Error> {
                 match slf.0.add(glob) {
                     Ok(_) => Ok(slf),
-                    Err(e) => Err(Error(e))
+                    Err(e) => Err(Error(e)),
                 }
             }
         }
