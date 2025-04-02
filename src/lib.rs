@@ -186,71 +186,71 @@ mod ignore {
             Ok(Self(ignore_rust::WalkBuilder::new(path.0)))
         }
 
-        fn hidden<'a>(mut slf: PyRefMut<'a, Self>, yes: bool) -> PyRefMut<'a, Self> {
+        fn hidden(mut slf: PyRefMut<'_, Self>, yes: bool) -> PyRefMut<'_, Self> {
             slf.0.hidden(yes);
 
             slf
         }
 
-        fn ignore<'a>(mut slf: PyRefMut<'a, Self>, yes: bool) -> PyRefMut<'a, Self> {
+        fn ignore(mut slf: PyRefMut<'_, Self>, yes: bool) -> PyRefMut<'_, Self> {
             slf.0.ignore(yes);
 
             slf
         }
 
-        fn parents<'a>(mut slf: PyRefMut<'a, Self>, yes: bool) -> PyRefMut<'a, Self> {
+        fn parents(mut slf: PyRefMut<'_, Self>, yes: bool) -> PyRefMut<'_, Self> {
             slf.0.parents(yes);
 
             slf
         }
 
-        fn git_ignore<'a>(mut slf: PyRefMut<'a, Self>, yes: bool) -> PyRefMut<'a, Self> {
+        fn git_ignore(mut slf: PyRefMut<'_, Self>, yes: bool) -> PyRefMut<'_, Self> {
             slf.0.git_ignore(yes);
 
             slf
         }
 
-        fn git_global<'a>(mut slf: PyRefMut<'a, Self>, yes: bool) -> PyRefMut<'a, Self> {
+        fn git_global(mut slf: PyRefMut<'_, Self>, yes: bool) -> PyRefMut<'_, Self> {
             slf.0.git_global(yes);
 
             slf
         }
 
-        fn git_exclude<'a>(mut slf: PyRefMut<'a, Self>, yes: bool) -> PyRefMut<'a, Self> {
+        fn git_exclude(mut slf: PyRefMut<'_, Self>, yes: bool) -> PyRefMut<'_, Self> {
             slf.0.git_exclude(yes);
 
             slf
         }
 
-        fn require_git<'a>(mut slf: PyRefMut<'a, Self>, yes: bool) -> PyRefMut<'a, Self> {
+        fn require_git(mut slf: PyRefMut<'_, Self>, yes: bool) -> PyRefMut<'_, Self> {
             slf.0.require_git(yes);
 
             slf
         }
 
-        fn overrides<'a>(
-            mut slf: PyRefMut<'a, Self>,
+        fn overrides(
+            mut slf: PyRefMut<'_, Self>,
             overrides: overrides::Override,
-        ) -> PyRefMut<'a, Self> {
+        ) -> PyRefMut<'_, Self> {
             slf.0.overrides(overrides.0);
 
             slf
         }
 
-        fn follow_links<'a>(mut slf: PyRefMut<'a, Self>, yes: bool) -> PyRefMut<'a, Self> {
+        fn follow_links(mut slf: PyRefMut<'_, Self>, yes: bool) -> PyRefMut<'_, Self> {
             slf.0.follow_links(yes);
 
             slf
         }
 
-        fn same_file_system<'a>(mut slf: PyRefMut<'a, Self>, yes: bool) -> PyRefMut<'a, Self> {
+        fn same_file_system(mut slf: PyRefMut<'_, Self>, yes: bool) -> PyRefMut<'_, Self> {
             slf.0.same_file_system(yes);
 
             slf
         }
 
         #[pyo3(signature = (depth=None))]
-        fn max_depth<'a>(mut slf: PyRefMut<'a, Self>, depth: Option<usize>) -> PyRefMut<'a, Self> {
+        fn max_depth(mut slf: PyRefMut<'_, Self>, depth: Option<usize>) -> PyRefMut<'_, Self> {
             slf.0.max_depth(depth);
 
             slf
@@ -265,7 +265,7 @@ mod ignore {
             slf
         }
 
-        fn add<'a>(mut slf: PyRefMut<'a, Self>, path: PathBuf) -> PyRefMut<'a, Self> {
+        fn add(mut slf: PyRefMut<'_, Self>, path: PathBuf) -> PyRefMut<'_, Self> {
             slf.0.add(path.0);
 
             slf
@@ -301,7 +301,7 @@ mod ignore {
         fn __next__(mut slf: PyRefMut<'_, Self>) -> Option<Result<DirEntry, Error>> {
             slf.0
                 .next()
-                .map(|res| res.map(|dent| DirEntry(dent)).map_err(|e| Error(e)))
+                .map(|res| res.map(DirEntry).map_err(Error))
         }
     }
 
@@ -329,7 +329,7 @@ mod ignore {
             }
 
             fn build(&self) -> Result<Override, Error> {
-                self.0.build().map(|o| Override(o)).map_err(|e| Error(e))
+                self.0.build().map(Override).map_err(Error)
             }
 
             fn add<'a>(
