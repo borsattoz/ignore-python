@@ -1,6 +1,6 @@
 name: website
 
-# build the documentation whenever there are new commits on main
+# build the documentation whenever tags are pushed
 on:
   push:
     tags:
