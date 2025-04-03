@@ -249,7 +249,6 @@ mod ignore {
             slf
         }
 
-        #[pyo3(signature = (depth=None))]
         fn max_depth(mut slf: PyRefMut<'_, Self>, depth: Option<usize>) -> PyRefMut<'_, Self> {
             slf.0.max_depth(depth);
 
