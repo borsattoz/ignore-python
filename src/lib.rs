@@ -1,4 +1,4 @@
-use pyo3::{prelude::*, types::PyAny};
+use pyo3::{create_exception, prelude::*, types::PyAny};
 
 fn register_child_module<'a>(
     parent_module: &'a Bound<'a, PyModule>,
@@ -73,14 +73,15 @@ impl<'py> IntoPyObject<'py> for Path<'_> {
     }
 }
 
+create_exception!(ignore, Error, pyo3::exceptions::PyException);
+
 #[pymodule]
 mod ignore {
     use std::io;
 
     use super::*;
 
-    #[pyclass(extends=pyo3::exceptions::PyException)]
-    struct Error(ignore_rust::Error);
+    struct ErrorWrapper(ignore_rust::Error);
 
     #[pyclass(extends=pyo3::exceptions::PyException)]
     struct IOError {
@@ -109,8 +110,8 @@ mod ignore {
         }
     }
 
-    impl From<Error> for PyErr {
-        fn from(error: Error) -> Self {
+    impl From<ErrorWrapper> for PyErr {
+        fn from(error: ErrorWrapper) -> Self {
             match &error.0 {
                 ignore_rust::Error::WithPath { path, err } => match err.as_ref() {
                     ignore_rust::Error::Io(io_error) => match io_error.kind() {
@@ -148,7 +149,7 @@ mod ignore {
         }
     }
 
-    impl From<ignore_rust::Error> for Error {
+    impl From<ignore_rust::Error> for ErrorWrapper {
         fn from(other: ignore_rust::Error) -> Self {
             Self(other)
         }
@@ -156,6 +157,8 @@ mod ignore {
 
     #[pymodule_init]
     fn init(m: &Bound<'_, PyModule>) -> PyResult<()> {
+        m.add("Error", m.py().get_type::<Error>())?;
+
         let overrides = register_child_module(m, "overrides")?;
 
         overrides.add_class::<overrides::OverrideBuilder>()?;
@@ -272,7 +275,7 @@ mod ignore {
 
         fn add_ignore(&mut self, path: PathBuf) -> PyResult<()> {
             if let Some(e) = self.0.add_ignore(path.0) {
-                Err(Error(e).into())
+                Err(ErrorWrapper(e).into())
             } else {
                 Ok(())
             }
@@ -297,10 +300,10 @@ mod ignore {
             slf
         }
 
-        fn __next__(mut slf: PyRefMut<'_, Self>) -> Option<Result<DirEntry, Error>> {
+        fn __next__(mut slf: PyRefMut<'_, Self>) -> Option<Result<DirEntry, ErrorWrapper>> {
             slf.0
                 .next()
-                .map(|res| res.map(DirEntry).map_err(Error))
+                .map(|res| res.map(DirEntry).map_err(ErrorWrapper))
         }
     }
 
@@ -327,17 +330,17 @@ mod ignore {
                 Ok(Self(ignore_rust::overrides::OverrideBuilder::new(path)))
             }
 
-            fn build(&self) -> Result<Override, Error> {
-                self.0.build().map(Override).map_err(Error)
+            fn build(&self) -> Result<Override, ErrorWrapper> {
+                self.0.build().map(Override).map_err(ErrorWrapper)
             }
 
             fn add<'a>(
                 mut slf: PyRefMut<'a, Self>,
                 glob: &'a str,
-            ) -> Result<PyRefMut<'a, Self>, Error> {
+            ) -> Result<PyRefMut<'a, Self>, ErrorWrapper> {
                 match slf.0.add(glob) {
                     Ok(_) => Ok(slf),
-                    Err(e) => Err(Error(e)),
+                    Err(e) => Err(ErrorWrapper(e)),
                 }
             }
         }
