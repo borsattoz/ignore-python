@@ -2,6 +2,7 @@ import ignore
 from ignore import WalkBuilder, Walk
 from pathlib import Path
 import pytest
+from sys import platform
 
 PATH = Path("./")
 
@@ -50,6 +51,11 @@ def test_add():
 def test_add_ignore():
     builder = WalkBuilder(PATH)
 
+    if platform == 'win32':
+        pstr = "C:\\"
+    else:
+        pstr = "/"
+
     with pytest.raises(ignore.Error):
-        builder.add_ignore(Path("/"))
+        builder.add_ignore(Path(pstr))
 
