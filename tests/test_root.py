@@ -52,7 +52,7 @@ def test_add_ignore():
     builder = WalkBuilder(PATH)
 
     if platform == 'win32':
-        pstr = "C:\\"
+        pstr = "C:\\Windows"
     else:
         pstr = "/"
 
