@@ -38,6 +38,16 @@ def test_max_depth():
     with pytest.raises(OverflowError):
         WalkBuilder(PATH).max_depth(-1)
 
+def test_max_filesize():
+    builder = (WalkBuilder(PATH)
+               .max_filesize(42)
+               )
+
+    assert type(builder) == WalkBuilder
+
+    with pytest.raises(OverflowError):
+        WalkBuilder(PATH).max_filesize(-1)
+
 def test_add_custom_ignore_filename():
     builder = WalkBuilder(PATH).add_custom_ignore_filename("foo")
 
