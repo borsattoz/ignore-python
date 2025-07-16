@@ -258,6 +258,12 @@ mod ignore {
             slf
         }
 
+        fn max_filesize(mut slf: PyRefMut<'_, Self>, filesize: Option<u64>) -> PyRefMut<'_, Self> {
+            slf.0.max_filesize(filesize);
+
+            slf
+        }
+
         fn add_custom_ignore_filename<'a>(
             mut slf: PyRefMut<'a, Self>,
             file_name: &str,
