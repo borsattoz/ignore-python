@@ -9,5 +9,5 @@ name = "ignore"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = "0.24.1"
-ignore-rust = { version = "0.4.22", package = "ignore" }
+pyo3 = "0.25.1"
+ignore-rust = { version = "0.4.23", package = "ignore" }
