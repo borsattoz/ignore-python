@@ -5,47 +5,21 @@ from ignore.overrides import Override
 
 
 class Error(Exception):
-    """Represents an error that can occur during operations."""
-
+    pass
 
 class IOError(Exception):
-    """
-    An error that occurs when doing I/O.
-
-    Currently, the only case where this error is used is for operating
-    system errors of type ENOENT.
-    """
-
     errno: int
-    """A numeric error code from the C variable errno."""
 
     filename: str
-    """The file system path involved."""
-
 
 class DirEntry:
-    """
-    A directory entry.
-
-    See https://docs.rs/ignore/latest/ignore/struct.DirEntry.html for
-    more information.
-    """
-
     def path(self) -> pathlib.Path: ...
 
     def depth(self) -> int: ...
 
 
 class WalkBuilder:
-    """
-    WalkBuilder builds a recursive directory iterator.
-
-    See https://docs.rs/ignore/latest/ignore/struct.WalkBuilder.html
-    for more information.
-    """
-
-    def __init__(self, path: pathlib.Path) -> None:
-        """Create a new builder for a recursive directory iterator for the directory given."""
+    def __init__(self, path: pathlib.Path) -> None: ...
 
     def hidden(self, yes: bool) -> Self: ...
 
@@ -81,22 +55,8 @@ class WalkBuilder:
 
 
 class Walk:
-    """
-    Walk is a recursive directory iterator over file paths in one or more directories.
-
-    See https://docs.rs/ignore/latest/ignore/struct.Walk.html for more
-    information.
-    """
-
-    def __init__(self, path: pathlib.Path) -> None:
-        """Creates a new recursive directory iterator for the file path given."""
+    def __init__(self, path: pathlib.Path) -> None: ...
 
     def __iter__(self) -> Self: ...
 
-    def __next__(self) -> DirEntry:
-        """
-        Advances the iterator and returns the next value.
-
-        :raises IOError: Currently, only when a ENOENT error happens
-        (e.g. broken symlinks when following them)
-        """
+    def __next__(self) -> DirEntry: ...

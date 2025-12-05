@@ -89,15 +89,18 @@ mod ignore {
     struct ErrorWrapper(ignore_rust::Error);
 
     /// An error that occurs when doing I/O.
+    ///
     /// Currently, the only case where this error is used is for operating
     /// system errors of type ENOENT.
     #[pyclass(extends=pyo3::exceptions::PyException)]
     struct IOError {
+        /// A numeric error code from the C variable errno.
         #[pyo3(get)]
         errno: u32,
 
         strerror: String,
 
+        /// The file system path involved.
         #[pyo3(get)]
         filename: String,
     }
@@ -173,6 +176,10 @@ mod ignore {
         overrides.add_class::<overrides::Override>()
     }
 
+    /// A directory entry.
+    ///
+    /// See https://docs.rs/ignore/0.4.25/ignore/struct.DirEntry.html for
+    /// more information.
     #[pyclass]
     struct DirEntry(ignore_rust::DirEntry);
 
@@ -187,11 +194,16 @@ mod ignore {
         }
     }
 
+    /// WalkBuilder builds a recursive directory iterator.
+    ///
+    /// See https://docs.rs/ignore/latest/ignore/struct.WalkBuilder.html
+    /// for more information.
     #[pyclass]
     struct WalkBuilder(ignore_rust::WalkBuilder);
 
     #[pymethods]
     impl WalkBuilder {
+        /// Create a new builder for a recursive directory iterator for the directory given.
         #[new]
         fn new(path: PathBuf) -> PyResult<Self> {
             Ok(Self(ignore_rust::WalkBuilder::new(path.0)))
@@ -300,11 +312,16 @@ mod ignore {
         }
     }
 
+    /// Walk is a recursive directory iterator over file paths in one or more directories.
+    ///
+    /// See https://docs.rs/ignore/latest/ignore/struct.Walk.html for more
+    /// information.
     #[pyclass]
     struct Walk(ignore_rust::Walk);
 
     #[pymethods]
     impl Walk {
+        /// Creates a new recursive directory iterator for the file path given.
         #[new]
         fn new(path: PathBuf) -> Self {
             Self(ignore_rust::Walk::new(path.0))
@@ -314,6 +331,10 @@ mod ignore {
             slf
         }
 
+        /// Advances the iterator and returns the next value.
+        ///
+        /// :raises IOError: Currently, only when a ENOENT error happens
+        /// (e.g. broken symlinks when following them)
         fn __next__(mut slf: PyRefMut<'_, Self>) -> Option<Result<DirEntry, ErrorWrapper>> {
             slf.0
                 .next()
