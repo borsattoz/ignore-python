@@ -10,4 +10,4 @@ crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = "0.25.1"
-ignore-rust = { version = "0.4.23", package = "ignore" }
+ignore-rust = { version = "0.4.25", package = "ignore" }
