@@ -27,7 +27,7 @@ class DirEntry:
     """
     A directory entry.
 
-    See https://docs.rs/ignore/latest/ignore/struct.DirEntry.html for
+    See https://docs.rs/ignore/0.4.25/ignore/struct.DirEntry.html for
     more information.
     """
 
@@ -40,7 +40,7 @@ class WalkBuilder:
     """
     WalkBuilder builds a recursive directory iterator.
 
-    See https://docs.rs/ignore/latest/ignore/struct.WalkBuilder.html
+    See https://docs.rs/ignore/0.4.25/ignore/struct.WalkBuilder.html
     for more information.
     """
 
@@ -84,7 +84,7 @@ class Walk:
     """
     Walk is a recursive directory iterator over file paths in one or more directories.
 
-    See https://docs.rs/ignore/latest/ignore/struct.Walk.html for more
+    See https://docs.rs/ignore/0.4.25/ignore/struct.Walk.html for more
     information.
     """
 
