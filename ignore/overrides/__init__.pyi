@@ -6,7 +6,7 @@ class Override:
     """
     Manages a set of overrides provided explicitly by the end user.
 
-    See https://docs.rs/ignore/latest/ignore/overrides/struct.Override.html for more information.
+    See https://docs.rs/ignore/0.4.25/ignore/overrides/struct.Override.html for more information.
     """
 
 
@@ -14,7 +14,7 @@ class OverrideBuilder:
     """
     Builds a matcher for a set of glob overrides.
 
-    See https://docs.rs/ignore/latest/ignore/overrides/struct.OverrideBuilder.html for more information.
+    See https://docs.rs/ignore/0.4.25/ignore/overrides/struct.OverrideBuilder.html for more information.
     """
 
     def __init__(self, path: pathlib.Path) -> None:
