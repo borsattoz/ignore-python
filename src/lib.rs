@@ -73,7 +73,12 @@ impl<'py> IntoPyObject<'py> for Path<'_> {
     }
 }
 
-create_exception!(ignore, Error, pyo3::exceptions::PyException);
+create_exception!(
+    ignore,
+    Error,
+    pyo3::exceptions::PyException,
+    "Represents an error that can occur during operations."
+);
 
 #[pymodule]
 mod ignore {
@@ -83,6 +88,9 @@ mod ignore {
 
     struct ErrorWrapper(ignore_rust::Error);
 
+    /// An error that occurs when doing I/O.
+    /// Currently, the only case where this error is used is for operating
+    /// system errors of type ENOENT.
     #[pyclass(extends=pyo3::exceptions::PyException)]
     struct IOError {
         #[pyo3(get)]
