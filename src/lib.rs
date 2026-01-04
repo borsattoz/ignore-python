@@ -342,10 +342,16 @@ mod ignore {
     mod overrides {
         use super::*;
 
+        /// Manages a set of overrides provided explicitly by the end user.
+        ///
+        /// See https://docs.rs/ignore/0.4.25/ignore/overrides/struct.Override.html for more information.
         #[pyclass]
         #[derive(Clone)]
         pub struct Override(pub ignore_rust::overrides::Override);
 
+        /// Builds a matcher for a set of glob overrides.
+        ///
+        /// See https://docs.rs/ignore/0.4.25/ignore/overrides/struct.OverrideBuilder.html for more information.
         #[pyclass]
         pub struct OverrideBuilder(ignore_rust::overrides::OverrideBuilder);
 

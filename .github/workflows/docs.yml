@@ -23,7 +23,7 @@ jobs:
       - run: python3 -m venv .venv
       - run: source .venv/bin/activate && pip install maturin pdoc
       - run: source .venv/bin/activate && maturin dev
-      - run: source .venv/bin/activate && pdoc -o docs/ --no-show-source 'ignore' '!ignore.ignore'
+      - run: source .venv/bin/activate && pdoc -o docs/ --include-undocumented --no-show-source 'ignore' '!ignore.ignore'
 
       - uses: actions/upload-pages-artifact@v3
         with:
