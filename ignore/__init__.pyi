@@ -5,9 +5,11 @@ from ignore.overrides import Override
 
 
 class Error(Exception):
-   """Represents an error that can occur during operations.""" 
+   """
+   Represents an error that can occur during operations.
+   """ 
 
-class IOError:
+class IOError(Exception):
     """
     An error that occurs when doing I/O.
 
