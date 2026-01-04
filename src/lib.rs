@@ -91,7 +91,7 @@ mod ignore {
     /// An error that occurs when doing I/O.
     ///
     /// Currently, the only case where this error is used is for operating
-    /// system errors of type ENOENT.
+    /// system errors of type `ENOENT`.
     #[pyclass(extends=pyo3::exceptions::PyException)]
     struct IOError {
         /// A numeric error code from the C variable errno.
@@ -194,7 +194,7 @@ mod ignore {
         }
     }
 
-    /// WalkBuilder builds a recursive directory iterator.
+    /// WalkBuilder builds a recursive directory iterator for the directory given.
     ///
     /// See https://docs.rs/ignore/0.4.25/ignore/struct.WalkBuilder.html
     /// for more information.
@@ -203,7 +203,6 @@ mod ignore {
 
     #[pymethods]
     impl WalkBuilder {
-        /// Create a new builder for a recursive directory iterator for the directory given.
         #[new]
         fn new(path: PathBuf) -> PyResult<Self> {
             Ok(Self(ignore_rust::WalkBuilder::new(path.0)))
@@ -314,6 +313,9 @@ mod ignore {
 
     /// Walk is a recursive directory iterator over file paths in one or more directories.
     ///
+    /// Currently, `__next__` raises `IOError` only when a `ENOENT` error happens (e.g. broken
+    /// symlinks when following them).
+    ///
     /// See https://docs.rs/ignore/0.4.25/ignore/struct.Walk.html for more
     /// information.
     #[pyclass]
@@ -321,7 +323,6 @@ mod ignore {
 
     #[pymethods]
     impl Walk {
-        /// Creates a new recursive directory iterator for the file path given.
         #[new]
         fn new(path: PathBuf) -> Self {
             Self(ignore_rust::Walk::new(path.0))
@@ -331,10 +332,6 @@ mod ignore {
             slf
         }
 
-        /// Advances the iterator and returns the next value.
-        ///
-        /// :raises IOError: Currently, only when a ENOENT error happens
-        /// (e.g. broken symlinks when following them)
         fn __next__(mut slf: PyRefMut<'_, Self>) -> Option<Result<DirEntry, ErrorWrapper>> {
             slf.0
                 .next()

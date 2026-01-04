@@ -5,12 +5,21 @@ from ignore.overrides import Override
 
 
 class Error(Exception):
-    pass
+   """Represents an error that can occur during operations.""" 
 
-class IOError(Exception):
+class IOError:
+    """
+    An error that occurs when doing I/O.
+
+    Currently, the only case where this error is used is for operating system errors of type `ENOENT`.
+    """
+
     errno: int
 
     filename: str
+
+    def __init__(self, errno: int, strerror: str, filename: str) -> None: ...
+
 
 class DirEntry:
     def path(self) -> pathlib.Path: ...
