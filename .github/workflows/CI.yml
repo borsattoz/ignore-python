@@ -182,7 +182,7 @@ jobs:
       matrix:
         platform:
           - runner: macos-14
-            target: x86_64
+            target: aarch64
           - runner: macos-15
             target: aarch64
     steps:
