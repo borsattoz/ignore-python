@@ -185,7 +185,7 @@ mod ignore {
 
     #[pymethods]
     impl DirEntry {
-        fn path(&self) -> Path {
+        fn path(&self) -> Path<'_> {
             Path(self.0.path())
         }
 
