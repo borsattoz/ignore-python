@@ -31,7 +31,14 @@ for entry in WalkBuilder("./").hidden(False).build():
 
 Refer to the [API documentation](https://borsattoz.github.io/ignore-python) for more information.
 
-## How to install (from pip)
+## How to install
+### On Arch Linux
+You can install the [python-ignore package](https://archlinux.org/packages/extra/x86_64/python-ignore/) from the official repos:
+```sh
+pacman -S python-ignore
+```
+### From pip
+You can install the [ignore-python package](https://pypi.org/project/ignore-python/):
 ```sh
 pip install ignore-python
 # or
