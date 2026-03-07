@@ -26,8 +26,10 @@ fn register_child_module<'a>(
 
 struct PathBuf(std::path::PathBuf);
 
-impl FromPyObject<'_> for PathBuf {
-    fn extract_bound(path: &Bound<'_, PyAny>) -> PyResult<Self> {
+impl<'py> FromPyObject<'_, 'py> for PathBuf {
+    type Error = PyErr;
+
+    fn extract(path: Borrowed<'_, 'py, PyAny>) -> PyResult<Self> {
         let builtins = PyModule::import(path.py(), "builtins")?;
 
         let path = builtins.getattr("str")?.call((path,), None)?;
@@ -126,7 +128,7 @@ mod ignore {
             match &error.0 {
                 ignore_rust::Error::WithPath { path, err } => match err.as_ref() {
                     ignore_rust::Error::Io(io_error) => match io_error.kind() {
-                        io::ErrorKind::NotFound => Python::with_gil(|py| {
+                        io::ErrorKind::NotFound => Python::attach(|py| {
                             let errno = py
                                 .import("errno")
                                 .expect("`errno` module")
@@ -250,11 +252,11 @@ mod ignore {
             slf
         }
 
-        fn overrides(
-            mut slf: PyRefMut<'_, Self>,
-            overrides: overrides::Override,
-        ) -> PyRefMut<'_, Self> {
-            slf.0.overrides(overrides.0);
+        fn overrides<'a>(
+            mut slf: PyRefMut<'a, Self>,
+            overrides: &'a overrides::Override,
+        ) -> PyRefMut<'a, Self> {
+            slf.0.overrides(overrides.0.clone());
 
             slf
         }
@@ -346,7 +348,6 @@ mod ignore {
         ///
         /// See https://docs.rs/ignore/0.4.25/ignore/overrides/struct.Override.html for more information.
         #[pyclass]
-        #[derive(Clone)]
         pub struct Override(pub ignore_rust::overrides::Override);
 
         /// Builds a matcher for a set of glob overrides.
