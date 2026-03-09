@@ -1,13 +1,9 @@
 import pathlib
 from typing import Self
 
-
 class Override: ...
-
 
 class OverrideBuilder:
     def __init__(self, path: pathlib.Path) -> None: ...
-
     def build(self) -> Override: ...
-
     def add(self, glob: str) -> Self: ...
