@@ -18,6 +18,11 @@ rev = "v1.44.0"
 hooks = [{ id = "typos" }]
 
 [[repos]]
+repo = "https://github.com/psf/black"
+rev = "26.3.0"
+hooks = [{ id = "black" }]
+
+[[repos]]
 repo = "local"
 hooks = [
     {
