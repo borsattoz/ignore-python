@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "ignore-python"
-description = "Rust ignore crate Python bindings"
+description = "Python bindings for the Rust crate ignore"
 readme = "README.md"
 license = {file = "LICENSE.txt"}
 requires-python = ">=3.8"
