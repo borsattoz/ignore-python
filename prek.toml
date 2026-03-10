@@ -1,0 +1,30 @@
+[[repos]]
+repo = "https://github.com/pre-commit/pre-commit-hooks"
+rev = "v6.0.0"
+hooks = [
+    { id = "end-of-file-fixer" },
+    { id = "trailing-whitespace" },
+    { id = "name-tests-test" },
+]
+
+[[repos]]
+repo = "https://github.com/abravalheri/validate-pyproject"
+rev = "v0.25"
+hooks = [{ id = "validate-pyproject" }]
+
+[[repos]]
+repo = "https://github.com/crate-ci/typos"
+rev = "v1.44.0"
+hooks = [{ id = "typos" }]
+
+[[repos]]
+repo = "local"
+hooks = [
+    {
+        id = "rustfmt",
+	name = "rustfmt",
+	entry = "rustfmt",
+	language = "system",
+	files = "\\.rs$",
+    }
+]

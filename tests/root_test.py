@@ -68,4 +68,3 @@ def test_add_ignore():
 
     with pytest.raises(ignore.Error):
         builder.add_ignore(Path(pstr))
-
