@@ -26,10 +26,10 @@ hooks = [{ id = "black" }]
 repo = "local"
 hooks = [
     {
-        id = "rustfmt",
-	name = "rustfmt",
-	entry = "rustfmt",
-	language = "system",
-	files = "\\.rs$",
+		id = "rustfmt",
+		name = "rustfmt",
+		entry = "rustfmt",
+		language = "system",
+		files = "\\.rs$",
     }
 ]
