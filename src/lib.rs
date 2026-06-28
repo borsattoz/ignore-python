@@ -180,7 +180,7 @@ mod ignore {
 
     /// A directory entry.
     ///
-    /// See https://docs.rs/ignore/0.4.25/ignore/struct.DirEntry.html for
+    /// See https://docs.rs/ignore/0.4.26/ignore/struct.DirEntry.html for
     /// more information.
     #[pyclass]
     struct DirEntry(ignore_rust::DirEntry);
@@ -198,7 +198,7 @@ mod ignore {
 
     /// WalkBuilder builds a recursive directory iterator for the directory given.
     ///
-    /// See https://docs.rs/ignore/0.4.25/ignore/struct.WalkBuilder.html
+    /// See https://docs.rs/ignore/0.4.26/ignore/struct.WalkBuilder.html
     /// for more information.
     #[pyclass]
     struct WalkBuilder(ignore_rust::WalkBuilder);
@@ -318,7 +318,7 @@ mod ignore {
     /// Currently, `__next__` raises `IOError` only when a `ENOENT` error happens (e.g. broken
     /// symlinks when following them).
     ///
-    /// See https://docs.rs/ignore/0.4.25/ignore/struct.Walk.html for more
+    /// See https://docs.rs/ignore/0.4.26/ignore/struct.Walk.html for more
     /// information.
     #[pyclass]
     struct Walk(ignore_rust::Walk);
@@ -346,13 +346,13 @@ mod ignore {
 
         /// Manages a set of overrides provided explicitly by the end user.
         ///
-        /// See https://docs.rs/ignore/0.4.25/ignore/overrides/struct.Override.html for more information.
+        /// See https://docs.rs/ignore/0.4.26/ignore/overrides/struct.Override.html for more information.
         #[pyclass]
         pub struct Override(pub ignore_rust::overrides::Override);
 
         /// Builds a matcher for a set of glob overrides.
         ///
-        /// See https://docs.rs/ignore/0.4.25/ignore/overrides/struct.OverrideBuilder.html for more information.
+        /// See https://docs.rs/ignore/0.4.26/ignore/overrides/struct.OverrideBuilder.html for more information.
         #[pyclass]
         pub struct OverrideBuilder(ignore_rust::overrides::OverrideBuilder);
 

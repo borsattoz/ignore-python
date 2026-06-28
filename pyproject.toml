@@ -22,3 +22,8 @@ repository = "https://github.com/borsattoz/ignore-python"
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
+
+[tool.maturin.generate-ci.github]
+pytest = true
+trusted-publishing = true
+publishing-environment = "pypi"
