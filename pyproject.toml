@@ -7,7 +7,7 @@ name = "ignore-python"
 description = "Python bindings for the Rust crate ignore"
 readme = "README.md"
 license = {file = "LICENSE.txt"}
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 keywords = ["python", "gitignore", "search", "rust", "extension", "module", "filesystem", "recursively-search", "fd", "ripgrep", "ignore"]
 classifiers = [
     "Programming Language :: Rust",
